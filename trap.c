@@ -47,6 +47,11 @@ trap(struct trapframe *tf)
   }
 
   switch(tf->trapno){
+  //case T_PGFLT:
+    //if((rcr2() < KERNBASE) && (rcr2() > (KERNBASE - (myproc()->ssz*PGSIZE) - PGSIZE)){
+      
+    //}
+    //break;
   case T_IRQ0 + IRQ_TIMER:
     if(cpuid() == 0){
       acquire(&tickslock);
