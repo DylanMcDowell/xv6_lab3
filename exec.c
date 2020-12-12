@@ -65,7 +65,6 @@ exec(char *path, char **argv)
   sz = PGROUNDUP(sz);
   if((allocuvm(pgdir, KERNBASE-(2*PGSIZE), (KERNBASE-PGSIZE)+1)) == 0)
     goto bad;
-  clearpteu(pgdir, (char*)(KERNBASE - 2*PGSIZE));
   sp = KERNBASE - 4;
   ssz = 1;
 

@@ -47,11 +47,6 @@ trap(struct trapframe *tf)
   }
 
   switch(tf->trapno){
-  //case T_PGFLT:
-    //if((rcr2() < KERNBASE) && (rcr2() > (KERNBASE - (myproc()->ssz*PGSIZE) - PGSIZE)){
-      
-    //}
-    //break;
   case T_IRQ0 + IRQ_TIMER:
     if(cpuid() == 0){
       acquire(&tickslock);
@@ -81,6 +76,17 @@ trap(struct trapframe *tf)
     cprintf("cpu%d: spurious interrupt at %x:%x\n",
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
+    break;
+  case T_PGFLT:
+    if(rcr2() <= KERNBASE-(myproc()->ssz*PGSIZE)){
+      if(allocuvm(myproc()->pgdir, KERNBASE-(myproc()->ssz*PGSIZE)-(PGSIZE), (KERNBASE-(myproc()->ssz*PGSIZE)-1)) == 0)
+        panic("trap 14");
+      myproc()->ssz += 1;
+    }
+    else{
+      cprintf("cpu%d, pid%d: unexpected page fault\n", cpuid(), myproc()->pid);
+      panic("trap14");
+    }
     break;
 
   //PAGEBREAK: 13
